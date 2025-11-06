@@ -112,14 +112,15 @@ export default function Index() {
 
   if (showQuiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-2xl shadow-lg animate-fade-in">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.1),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
+        <Card className="w-full max-w-2xl card-floating animate-fade-in relative backdrop-blur-sm bg-white/95 border-0">
           <CardHeader className="text-center space-y-2">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <Icon name="Heart" size={32} className="text-primary" />
+            <div className="mx-auto w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+              <Icon name="Heart" size={36} className="text-white" />
             </div>
-            <CardTitle className="text-3xl font-semibold">Точка опоры</CardTitle>
-            <CardDescription className="text-base">
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Точка опоры</CardTitle>
+            <CardDescription className="text-base text-muted-foreground">
               Давайте познакомимся и поймем, как мы можем вам помочь
             </CardDescription>
           </CardHeader>
@@ -153,10 +154,10 @@ export default function Index() {
                 {quizSteps[currentStep].options.map((option) => (
                   <div
                     key={option.value}
-                    className="flex items-center space-x-3 border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                    className="flex items-center space-x-3 border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:shadow-md transition-all cursor-pointer bg-white"
                   >
                     <RadioGroupItem value={option.value} id={option.value} />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base">
+                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base font-medium">
                       {option.label}
                     </Label>
                   </div>
@@ -193,51 +194,55 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 relative">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.08),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.08),transparent_50%)]" />
+      <header className="border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <Icon name="Heart" size={20} className="text-primary" />
+            <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center shadow-md">
+              <Icon name="Heart" size={22} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold">Точка опоры</h1>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Точка опоры</h1>
               <p className="text-sm text-muted-foreground">Здравствуйте, {userName}</p>
             </div>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="rounded-xl border-2 hover:shadow-md transition-all">
             <Icon name="Settings" size={16} className="mr-2" />
             Настройки
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative">
         <div className="max-w-6xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
-              <TabsTrigger value="diary" className="gap-2">
+            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 p-1 rounded-2xl shadow-md">
+              <TabsTrigger value="diary" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="BookOpen" size={16} />
                 Дневник
               </TabsTrigger>
-              <TabsTrigger value="progress" className="gap-2">
+              <TabsTrigger value="progress" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="TrendingUp" size={16} />
                 Прогресс
               </TabsTrigger>
-              <TabsTrigger value="education" className="gap-2">
+              <TabsTrigger value="education" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="GraduationCap" size={16} />
                 Обучение
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="diary" className="space-y-6 animate-fade-in">
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden">
+                <div className="h-2 gradient-primary" />
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Icon name="Pencil" size={20} />
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Pencil" size={20} className="text-white" />
+                    </div>
                     Новая запись
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Опишите ваш день и эмоции. Это помогает отслеживать динамику состояния.
                   </CardDescription>
                 </CardHeader>
@@ -271,28 +276,28 @@ export default function Index() {
                     />
                   </div>
 
-                  <Button onClick={saveDiaryEntry} className="w-full">
+                  <Button onClick={saveDiaryEntry} className="w-full gradient-primary hover:shadow-lg transition-all rounded-xl h-12 text-base font-semibold">
                     <Icon name="Save" size={16} className="mr-2" />
                     Сохранить запись
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle>История записей</CardTitle>
-                  <CardDescription>
-                    Ваши предыдущие записи. Страйк: {progressData.daysStreak} дней подряд 🔥
+                  <CardTitle className="text-2xl">История записей</CardTitle>
+                  <CardDescription className="text-base">
+                    Ваши предыдущие записи. Страйк: <span className="font-bold text-orange-500">{progressData.daysStreak} дней подряд 🔥</span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {diaryEntries.map((entry, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-2 hover:shadow-sm transition-shadow">
+                    <div key={index} className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-gradient-to-br from-white to-gray-50">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{new Date(entry.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                        <Badge variant="outline">Настроение: {entry.mood}/10</Badge>
+                        <span className="text-sm font-semibold">{new Date(entry.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        <Badge className="gradient-secondary text-white border-0 rounded-lg px-3">Настроение: {entry.mood}/10</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{entry.text}</p>
+                      <p className="text-sm text-gray-700">{entry.text}</p>
                     </div>
                   ))}
                 </CardContent>
@@ -301,54 +306,60 @@ export default function Index() {
 
             <TabsContent value="progress" className="space-y-6 animate-fade-in">
               <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+                <Card className="card-elevated border-0 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl overflow-hidden">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Страйк</CardTitle>
-                    <Icon name="Flame" className="text-orange-500" size={20} />
+                    <CardTitle className="text-sm font-semibold">Страйк</CardTitle>
+                    <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                      <Icon name="Flame" className="text-orange-600" size={22} />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{progressData.daysStreak} дней</div>
-                    <p className="text-xs text-muted-foreground mt-1">Ежедневных записей подряд</p>
+                    <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">{progressData.daysStreak} дней</div>
+                    <p className="text-xs text-muted-foreground mt-1 font-medium">Ежедневных записей подряд</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="card-elevated border-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl overflow-hidden">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Всего записей</CardTitle>
-                    <Icon name="BookOpen" className="text-primary" size={20} />
+                    <CardTitle className="text-sm font-semibold">Всего записей</CardTitle>
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Icon name="BookOpen" className="text-blue-600" size={22} />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{progressData.entriesTotal}</div>
-                    <p className="text-xs text-muted-foreground mt-1">За все время</p>
+                    <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{progressData.entriesTotal}</div>
+                    <p className="text-xs text-muted-foreground mt-1 font-medium">За все время</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="card-elevated border-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl overflow-hidden">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Среднее настроение</CardTitle>
-                    <Icon name="Smile" className="text-green-500" size={20} />
+                    <CardTitle className="text-sm font-semibold">Среднее настроение</CardTitle>
+                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                      <Icon name="Smile" className="text-green-600" size={22} />
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{progressData.moodAverage}/10</div>
-                    <p className="text-xs text-muted-foreground mt-1">За последние 7 дней</p>
+                    <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{progressData.moodAverage}/10</div>
+                    <p className="text-xs text-muted-foreground mt-1 font-medium">За последние 7 дней</p>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Динамика вашего состояния</CardTitle>
-                  <CardDescription>График показывает изменение настроения со временем</CardDescription>
+                  <CardTitle className="text-2xl">Динамика вашего состояния</CardTitle>
+                  <CardDescription className="text-base">График показывает изменение настроения со временем</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 flex items-end justify-between gap-2">
+                  <div className="h-64 flex items-end justify-between gap-3 p-4 bg-gradient-to-b from-purple-50/50 to-blue-50/50 rounded-xl">
                     {diaryEntries.reverse().map((entry, index) => (
                       <div key={index} className="flex-1 flex flex-col items-center gap-2">
                         <div
-                          className="w-full bg-primary rounded-t transition-all hover:opacity-80"
+                          className="w-full gradient-primary rounded-t-lg transition-all hover:opacity-80 shadow-md"
                           style={{ height: `${(entry.mood / 10) * 100}%` }}
                         />
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground font-medium">
                           {new Date(entry.date).getDate()}
                         </span>
                       </div>
@@ -357,30 +368,32 @@ export default function Index() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Icon name="Award" size={20} />
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Award" size={20} className="text-white" />
+                    </div>
                     Ваши достижения
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4 md:grid-cols-2">
-                    <div className="flex items-center gap-3 p-4 border rounded-lg">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <Icon name="Check" className="text-primary" size={24} />
+                    <div className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-gradient-to-br from-purple-50 to-blue-50 hover:shadow-md transition-all">
+                      <div className="w-14 h-14 gradient-primary rounded-xl flex items-center justify-center shadow-md">
+                        <Icon name="Check" className="text-white" size={28} />
                       </div>
                       <div>
-                        <p className="font-medium">Первая запись</p>
+                        <p className="font-semibold text-base">Первая запись</p>
                         <p className="text-sm text-muted-foreground">Вы начали свой путь</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 p-4 border rounded-lg">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <Icon name="Flame" className="text-orange-500" size={24} />
+                    <div className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 hover:shadow-md transition-all">
+                      <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
+                        <Icon name="Flame" className="text-white" size={28} />
                       </div>
                       <div>
-                        <p className="font-medium">Страйк 7 дней</p>
+                        <p className="font-semibold text-base">Страйк 7 дней</p>
                         <p className="text-sm text-muted-foreground">Отличная регулярность</p>
                       </div>
                     </div>
@@ -390,10 +403,10 @@ export default function Index() {
             </TabsContent>
 
             <TabsContent value="education" className="space-y-6 animate-fade-in">
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Стадии переживания утраты</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-2xl">Стадии переживания утраты</CardTitle>
+                  <CardDescription className="text-base">
                     Понимание процесса помогает чувствовать себя увереннее
                   </CardDescription>
                 </CardHeader>
@@ -425,26 +438,28 @@ export default function Index() {
                       icon: 'Heart',
                     },
                   ].map((stage, index) => (
-                    <div key={index} className="flex gap-4 p-4 border rounded-lg hover:shadow-sm transition-shadow">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Icon name={stage.icon as any} className="text-primary" size={24} />
+                    <div key={index} className="flex gap-4 p-5 border-2 border-gray-200 rounded-xl hover:shadow-lg hover:border-purple-300 transition-all bg-gradient-to-r from-white to-gray-50">
+                      <div className="w-14 h-14 gradient-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                        <Icon name={stage.icon as any} className="text-white" size={24} />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-semibold">{stage.title}</h3>
-                        <p className="text-sm text-muted-foreground">{stage.description}</p>
+                        <h3 className="font-bold text-base">{stage.title}</h3>
+                        <p className="text-sm text-gray-700">{stage.description}</p>
                       </div>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Icon name="Users" size={20} />
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Users" size={20} className="text-white" />
+                    </div>
                     Профессиональная помощь
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Проверенные психологи и центры поддержки
                   </CardDescription>
                 </CardHeader>
@@ -495,39 +510,41 @@ export default function Index() {
 
                   <Separator />
 
-                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="gradient-primary rounded-2xl p-6 space-y-3 shadow-lg">
                     <div className="flex items-center gap-2">
-                      <Icon name="Sparkles" className="text-primary" size={20} />
-                      <h4 className="font-semibold">Премиум подписка</h4>
+                      <Icon name="Sparkles" className="text-white" size={24} />
+                      <h4 className="font-bold text-white text-lg">Премиум подписка</h4>
                     </div>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
+                    <ul className="space-y-2 text-sm text-white/95">
                       <li className="flex items-center gap-2">
-                        <Icon name="Check" size={14} className="text-primary" />
+                        <Icon name="Check" size={16} className="text-white" />
                         Скидка на первые 3 консультации
                       </li>
                       <li className="flex items-center gap-2">
-                        <Icon name="Check" size={14} className="text-primary" />
+                        <Icon name="Check" size={16} className="text-white" />
                         Интерактивные списки мест в вашем городе
                       </li>
                       <li className="flex items-center gap-2">
-                        <Icon name="Check" size={14} className="text-primary" />
+                        <Icon name="Check" size={16} className="text-white" />
                         Возможность делиться записями с близкими
                       </li>
                     </ul>
-                    <Button className="w-full mt-3">
+                    <Button className="w-full mt-3 bg-white text-purple-600 hover:bg-gray-100 shadow-md rounded-xl h-12 font-bold text-base">
                       Оформить за 1800₽
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Icon name="Package" size={20} />
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Package" size={20} className="text-white" />
+                    </div>
                     Физические наборы с карточками
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Инструменты для работы с эмоциями в офлайне
                   </CardDescription>
                 </CardHeader>
