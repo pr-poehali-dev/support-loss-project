@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -46,24 +46,26 @@ const quizSteps: QuizStep[] = [
   },
 ];
 
+const API_USER_URL = 'https://functions.poehali.dev/8b5843b8-9998-4bdb-a58c-38211fb1f76a';
+const API_DIARY_URL = 'https://functions.poehali.dev/59b9c88a-c125-4e12-94d5-8a84a7d15a47';
+
 export default function Index() {
   const [showQuiz, setShowQuiz] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string>>({});
   const [userName, setUserName] = useState('');
+  const [userId, setUserId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('diary');
+  const [loading, setLoading] = useState(false);
   
-  const [diaryEntries, setDiaryEntries] = useState<Array<{ date: string; mood: number; text: string }>>([
-    { date: '2024-11-05', mood: 6, text: 'Сегодня было немного легче. Смогла выйти на прогулку.' },
-    { date: '2024-11-04', mood: 4, text: 'Тяжелый день. Много воспоминаний.' },
-  ]);
+  const [diaryEntries, setDiaryEntries] = useState<Array<{ id?: number; date: string; mood: number; text: string }>>([]);
   
   const [currentMood, setCurrentMood] = useState(5);
   const [currentEntry, setCurrentEntry] = useState('');
-  const [progressData] = useState({
-    daysStreak: 7,
-    entriesTotal: 12,
-    moodAverage: 5.2,
+  const [progressData, setProgressData] = useState({
+    daysStreak: 0,
+    entriesTotal: 0,
+    moodAverage: 0,
   });
 
   const [breathingActive, setBreathingActive] = useState(false);
@@ -89,6 +91,18 @@ export default function Index() {
 
     return () => clearInterval(timer);
   }, [breathingActive, breathingPhase]);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    const storedUserName = localStorage.getItem('userName');
+    
+    if (storedUserId && storedUserName) {
+      setUserId(parseInt(storedUserId));
+      setUserName(storedUserName);
+      setShowQuiz(false);
+      loadDiaryData(parseInt(storedUserId));
+    }
+  }, []);
 
   const startBreathing = () => {
     setBreathingActive(true);
@@ -119,31 +133,107 @@ export default function Index() {
     }
   };
 
-  const completeQuiz = () => {
+  const loadDiaryData = async (uid: number) => {
+    if (!uid) return;
+    
+    try {
+      const [entriesRes, statsRes] = await Promise.all([
+        fetch(API_DIARY_URL, {
+          headers: { 'X-User-Id': uid.toString() },
+        }),
+        fetch(`${API_DIARY_URL}?action=stats`, {
+          headers: { 'X-User-Id': uid.toString() },
+        }),
+      ]);
+      
+      if (entriesRes.ok) {
+        const entriesData = await entriesRes.json();
+        setDiaryEntries(entriesData.entries || []);
+      }
+      
+      if (statsRes.ok) {
+        const statsData = await statsRes.json();
+        setProgressData(statsData);
+      }
+    } catch (error) {
+      console.error('Failed to load diary data:', error);
+    }
+  };
+
+  const completeQuiz = async () => {
     if (!userName.trim()) {
       toast.error('Пожалуйста, представьтесь');
       return;
     }
-    setShowQuiz(false);
-    toast.success(`Добро пожаловать, ${userName}! Мы здесь, чтобы поддержать вас.`);
+    
+    setLoading(true);
+    try {
+      const response = await fetch(API_USER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: userName, quizAnswers }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to create user');
+      
+      const data = await response.json();
+      setUserId(data.id);
+      localStorage.setItem('userId', data.id.toString());
+      localStorage.setItem('userName', userName);
+      
+      setShowQuiz(false);
+      toast.success(`Добро пожаловать, ${userName}! Мы здесь, чтобы поддержать вас.`);
+      
+      loadDiaryData(data.id);
+    } catch (error) {
+      toast.error('Ошибка при создании профиля');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const saveDiaryEntry = () => {
+  const saveDiaryEntry = async () => {
     if (!currentEntry.trim()) {
       toast.error('Напишите что-нибудь о своем дне');
       return;
     }
+    
+    if (!userId) {
+      toast.error('Ошибка: пользователь не найден');
+      return;
+    }
 
-    const newEntry = {
-      date: new Date().toISOString().split('T')[0],
-      mood: currentMood,
-      text: currentEntry,
-    };
-
-    setDiaryEntries([newEntry, ...diaryEntries]);
-    setCurrentEntry('');
-    setCurrentMood(5);
-    toast.success('Запись сохранена');
+    setLoading(true);
+    try {
+      const response = await fetch(API_DIARY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': userId.toString(),
+        },
+        body: JSON.stringify({
+          mood: currentMood,
+          text: currentEntry,
+          date: new Date().toISOString().split('T')[0],
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to save entry');
+      
+      const newEntry = await response.json();
+      setDiaryEntries([newEntry, ...diaryEntries]);
+      setCurrentEntry('');
+      setCurrentMood(5);
+      toast.success('Запись сохранена');
+      
+      loadDiaryData(userId);
+    } catch (error) {
+      toast.error('Ошибка при сохранении записи');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (showQuiz) {
@@ -221,7 +311,7 @@ export default function Index() {
               <Button
                 onClick={nextQuizStep}
                 className="ml-auto w-32"
-                disabled={!quizAnswers[currentStep] || (currentStep === 0 && !userName.trim())}
+                disabled={!quizAnswers[currentStep] || (currentStep === 0 && !userName.trim()) || loading}
               >
                 {currentStep === quizSteps.length - 1 ? 'Начать' : 'Далее'}
                 <Icon name="ChevronRight" size={16} className="ml-1" />
@@ -522,7 +612,7 @@ export default function Index() {
                     />
                   </div>
 
-                  <Button onClick={saveDiaryEntry} className="w-full gradient-primary hover:shadow-lg transition-all rounded-xl h-12 text-base font-semibold">
+                  <Button onClick={saveDiaryEntry} disabled={loading} className="w-full gradient-primary hover:shadow-lg transition-all rounded-xl h-12 text-base font-semibold">
                     <Icon name="Save" size={16} className="mr-2" />
                     Сохранить запись
                   </Button>
@@ -537,15 +627,23 @@ export default function Index() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {diaryEntries.map((entry, index) => (
-                    <div key={index} className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-gradient-to-br from-white to-gray-50">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold">{new Date(entry.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                        <Badge className="gradient-secondary text-white border-0 rounded-lg px-3">Настроение: {entry.mood}/10</Badge>
-                      </div>
-                      <p className="text-sm text-gray-700">{entry.text}</p>
+                  {diaryEntries.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Icon name="BookOpen" size={48} className="mx-auto mb-4 opacity-50" />
+                      <p>Пока нет записей в дневнике</p>
+                      <p className="text-sm">Начните делать записи, чтобы отслеживать свой прогресс</p>
                     </div>
-                  ))}
+                  ) : (
+                    diaryEntries.map((entry, index) => (
+                      <div key={index} className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-gradient-to-br from-white to-gray-50">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold">{new Date(entry.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                          <Badge className="gradient-secondary text-white border-0 rounded-lg px-3">Настроение: {entry.mood}/10</Badge>
+                        </div>
+                        <p className="text-sm text-gray-700">{entry.text}</p>
+                      </div>
+                    ))
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -598,19 +696,29 @@ export default function Index() {
                   <CardDescription className="text-base">График показывает изменение настроения со временем</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 flex items-end justify-between gap-3 p-4 bg-gradient-to-b from-purple-50/50 to-blue-50/50 rounded-xl">
-                    {diaryEntries.reverse().map((entry, index) => (
-                      <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                        <div
-                          className="w-full gradient-primary rounded-t-lg transition-all hover:opacity-80 shadow-md"
-                          style={{ height: `${(entry.mood / 10) * 100}%` }}
-                        />
-                        <span className="text-xs text-muted-foreground font-medium">
-                          {new Date(entry.date).getDate()}
-                        </span>
+                  {diaryEntries.length === 0 ? (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <Icon name="TrendingUp" size={48} className="mx-auto mb-4 opacity-50" />
+                        <p>Недостаточно данных для графика</p>
+                        <p className="text-sm">Делайте записи, чтобы увидеть динамику</p>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="h-64 flex items-end justify-between gap-3 p-4 bg-gradient-to-b from-purple-50/50 to-blue-50/50 rounded-xl">
+                      {diaryEntries.slice(0, 10).reverse().map((entry, index) => (
+                        <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                          <div
+                            className="w-full gradient-primary rounded-t-lg transition-all hover:opacity-80 shadow-md"
+                            style={{ height: `${(entry.mood / 10) * 100}%` }}
+                          />
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {new Date(entry.date).getDate()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -634,15 +742,17 @@ export default function Index() {
                         <p className="text-sm text-muted-foreground">Вы начали свой путь</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 hover:shadow-md transition-all">
-                      <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
-                        <Icon name="Flame" className="text-white" size={28} />
+                    {progressData.daysStreak >= 7 && (
+                      <div className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 hover:shadow-md transition-all">
+                        <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
+                          <Icon name="Flame" className="text-white" size={28} />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-base">Страйк 7 дней</p>
+                          <p className="text-sm text-muted-foreground">Отличная регулярность</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-base">Страйк 7 дней</p>
-                        <p className="text-sm text-muted-foreground">Отличная регулярность</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

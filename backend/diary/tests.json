@@ -1,0 +1,54 @@
+{
+  "tests": [
+    {
+      "name": "Create diary entry",
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "X-User-Id": "2"
+      },
+      "body": {
+        "mood": 7,
+        "text": "Test entry from tests",
+        "date": "2024-11-06"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "date": "string",
+        "mood": 7,
+        "text": "Test entry from tests",
+        "createdAt": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get diary entries list",
+      "method": "GET",
+      "path": "/",
+      "headers": {
+        "X-User-Id": "2"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "entries": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get stats",
+      "method": "GET",
+      "path": "/?action=stats",
+      "headers": {
+        "X-User-Id": "2"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "daysStreak": "number",
+        "entriesTotal": "number",
+        "moodAverage": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

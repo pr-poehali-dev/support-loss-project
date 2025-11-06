@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Create user",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "name": "Test User",
+        "quizAnswers": {
+          "0": "recent",
+          "1": "sadness",
+          "2": "support"
+        }
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "name": "Test User",
+        "createdAt": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
