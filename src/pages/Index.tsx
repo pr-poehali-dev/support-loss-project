@@ -66,6 +66,42 @@ export default function Index() {
     moodAverage: 5.2,
   });
 
+  const [breathingActive, setBreathingActive] = useState(false);
+  const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [breathingCount, setBreathingCount] = useState(4);
+
+  useEffect(() => {
+    if (!breathingActive) return;
+
+    const timer = setInterval(() => {
+      setBreathingCount((prev) => {
+        if (prev === 1) {
+          setBreathingPhase((currentPhase) => {
+            if (currentPhase === 'inhale') return 'hold';
+            if (currentPhase === 'hold') return 'exhale';
+            return 'inhale';
+          });
+          return 4;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [breathingActive, breathingPhase]);
+
+  const startBreathing = () => {
+    setBreathingActive(true);
+    setBreathingPhase('inhale');
+    setBreathingCount(4);
+  };
+
+  const stopBreathing = () => {
+    setBreathingActive(false);
+    setBreathingPhase('inhale');
+    setBreathingCount(4);
+  };
+
   const handleQuizAnswer = (value: string) => {
     setQuizAnswers({ ...quizAnswers, [currentStep]: value });
   };
@@ -225,20 +261,222 @@ export default function Index() {
       <main className="container mx-auto px-4 py-8 relative">
         <div className="max-w-6xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid glass-effect border-2 border-white/30 p-1.5 rounded-2xl shadow-lg">
+            <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid glass-effect border-2 border-white/30 p-1.5 rounded-2xl shadow-lg">
               <TabsTrigger value="diary" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="BookOpen" size={16} />
-                Дневник
+                <span className="hidden sm:inline">Дневник</span>
+              </TabsTrigger>
+              <TabsTrigger value="meditation" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
+                <Icon name="Wind" size={16} />
+                <span className="hidden sm:inline">Практики</span>
               </TabsTrigger>
               <TabsTrigger value="progress" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="TrendingUp" size={16} />
-                Прогресс
+                <span className="hidden sm:inline">Прогресс</span>
               </TabsTrigger>
               <TabsTrigger value="education" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="GraduationCap" size={16} />
-                Обучение
+                <span className="hidden sm:inline">Обучение</span>
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="meditation" className="space-y-6">
+              <Card className="card-elevated border-0 glass-effect rounded-2xl animate-scale-in">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Wind" size={20} className="text-white" />
+                    </div>
+                    Дыхательная практика 4-4-4
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Техника осознанного дыхания помогает успокоиться и вернуться в настоящий момент
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div 
+                      className={`w-48 h-48 rounded-full gradient-primary flex items-center justify-center transition-all duration-1000 ${
+                        breathingActive 
+                          ? breathingPhase === 'inhale' 
+                            ? 'scale-110 shadow-2xl' 
+                            : breathingPhase === 'hold' 
+                              ? 'scale-110 shadow-2xl' 
+                              : 'scale-90 shadow-md'
+                          : 'scale-100 shadow-lg'
+                      }`}
+                    >
+                      <div className="text-center text-white">
+                        <div className="text-6xl font-bold">{breathingCount}</div>
+                        <div className="text-xl mt-2 font-medium">
+                          {breathingPhase === 'inhale' && 'Вдох'}
+                          {breathingPhase === 'hold' && 'Задержка'}
+                          {breathingPhase === 'exhale' && 'Выдох'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-8 space-y-3 w-full max-w-sm">
+                      {!breathingActive ? (
+                        <Button 
+                          onClick={startBreathing} 
+                          className="w-full gradient-primary hover:shadow-lg transition-all rounded-xl h-12 text-base font-semibold"
+                        >
+                          <Icon name="Play" size={16} className="mr-2" />
+                          Начать практику
+                        </Button>
+                      ) : (
+                        <Button 
+                          onClick={stopBreathing}
+                          variant="outline"
+                          className="w-full rounded-xl h-12 text-base font-semibold border-2 hover:bg-gray-100"
+                        >
+                          <Icon name="Square" size={16} className="mr-2" />
+                          Остановить
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg">Как выполнять:</h3>
+                    <ol className="space-y-2 text-sm text-gray-700">
+                      <li className="flex gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-primary text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+                        <span>Сядьте удобно, выпрямите спину</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-primary text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+                        <span>Вдыхайте носом на 4 счета</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-primary text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+                        <span>Задержите дыхание на 4 счета</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-primary text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">4</span>
+                        <span>Выдыхайте через рот на 4 счета</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-primary text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">5</span>
+                        <span>Повторяйте цикл 5-10 минут</span>
+                      </li>
+                    </ol>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="card-elevated border-0 glass-effect rounded-2xl animate-scale-in" style={{ animationDelay: '0.1s' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Sparkles" size={20} className="text-white" />
+                    </div>
+                    Управляемые медитации
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Аудио-практики для работы с эмоциями
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    {
+                      title: 'Принятие и отпускание',
+                      duration: '15 минут',
+                      description: 'Медитация помогает бережно принять свои чувства и начать процесс отпускания боли',
+                      icon: 'Heart',
+                      color: 'from-pink-50 to-rose-50',
+                    },
+                    {
+                      title: 'Возвращение в настоящее',
+                      duration: '10 минут',
+                      description: 'Практика осознанности для заземления и концентрации на текущем моменте',
+                      icon: 'Anchor',
+                      color: 'from-blue-50 to-cyan-50',
+                    },
+                    {
+                      title: 'Благодарность памяти',
+                      duration: '12 минут',
+                      description: 'Мягкая практика для работы с воспоминаниями через призму благодарности',
+                      icon: 'Star',
+                      color: 'from-amber-50 to-yellow-50',
+                    },
+                    {
+                      title: 'Восстановление энергии',
+                      duration: '20 минут',
+                      description: 'Глубокая релаксация для восстановления эмоциональных и физических сил',
+                      icon: 'Zap',
+                      color: 'from-green-50 to-emerald-50',
+                    },
+                  ].map((meditation, index) => (
+                    <div 
+                      key={index} 
+                      className={`border-2 border-gray-200 rounded-xl p-5 space-y-3 hover:shadow-lg hover:border-purple-300 transition-all bg-gradient-to-br ${meditation.color}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+                            <Icon name={meditation.icon as any} size={24} className="text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-base">{meditation.title}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">{meditation.description}</p>
+                          </div>
+                        </div>
+                        <Badge className="gradient-secondary text-white border-0 rounded-lg px-3 flex-shrink-0">
+                          {meditation.duration}
+                        </Badge>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        className="w-full rounded-xl border-2 hover:bg-white hover:shadow-md transition-all"
+                      >
+                        <Icon name="Play" size={14} className="mr-2" />
+                        Начать медитацию
+                      </Button>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="card-elevated border-0 glass-effect rounded-2xl animate-scale-in" style={{ animationDelay: '0.2s' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
+                      <Icon name="Music" size={20} className="text-white" />
+                    </div>
+                    Успокаивающие звуки
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Фоновые звуки природы для релаксации
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {[
+                      { name: 'Дождь', icon: 'CloudRain' },
+                      { name: 'Океан', icon: 'Waves' },
+                      { name: 'Лес', icon: 'Trees' },
+                      { name: 'Костер', icon: 'Flame' },
+                      { name: 'Ветер', icon: 'Wind' },
+                      { name: 'Ручей', icon: 'Droplets' },
+                    ].map((sound, index) => (
+                      <button
+                        key={index}
+                        className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition-all bg-white"
+                      >
+                        <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center">
+                          <Icon name={sound.icon as any} size={20} className="text-white" />
+                        </div>
+                        <span className="text-sm font-medium">{sound.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             <TabsContent value="diary" className="space-y-6">
               <Card className="card-elevated border-0 glass-effect rounded-2xl overflow-hidden animate-scale-in">
