@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -112,9 +112,13 @@ export default function Index() {
 
   if (showQuiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.1),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
-        <Card className="w-full max-w-2xl card-floating animate-fade-in relative backdrop-blur-sm bg-white/95 border-0">
+      <div className="min-h-screen gradient-mesh flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 animate-glow opacity-60">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
+          <div className="absolute top-40 right-20 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+        <Card className="w-full max-w-2xl card-floating animate-scale-in relative glass-effect border-0">
           <CardHeader className="text-center space-y-2">
             <div className="mx-auto w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mb-4 shadow-lg">
               <Icon name="Heart" size={36} className="text-white" />
@@ -127,13 +131,13 @@ export default function Index() {
           <CardContent className="space-y-6">
             {currentStep === 0 && (
               <div className="space-y-4 animate-slide-up">
-                <Label htmlFor="name" className="text-base">Как вас зовут?</Label>
+                <Label htmlFor="name" className="text-base font-medium">Как вас зовут?</Label>
                 <Input
                   id="name"
                   placeholder="Ваше имя"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="text-base"
+                  className="text-base h-12 rounded-xl border-2 focus:ring-2 focus:ring-purple-400 transition-all"
                 />
               </div>
             )}
@@ -194,9 +198,13 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 relative">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.08),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.08),transparent_50%)]" />
-      <header className="border-b border-gray-200/50 bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen gradient-mesh relative">
+      <div className="absolute inset-0 animate-glow opacity-40">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '3s' }} />
+      </div>
+      <header className="border-b border-white/20 glass-effect sticky top-0 z-50 shadow-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center shadow-md">
@@ -217,7 +225,7 @@ export default function Index() {
       <main className="container mx-auto px-4 py-8 relative">
         <div className="max-w-6xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 p-1 rounded-2xl shadow-md">
+            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid glass-effect border-2 border-white/30 p-1.5 rounded-2xl shadow-lg">
               <TabsTrigger value="diary" className="gap-2 rounded-xl data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-md">
                 <Icon name="BookOpen" size={16} />
                 Дневник
@@ -232,9 +240,9 @@ export default function Index() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="diary" className="space-y-6 animate-fade-in">
-              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden">
-                <div className="h-2 gradient-primary" />
+            <TabsContent value="diary" className="space-y-6">
+              <Card className="card-elevated border-0 glass-effect rounded-2xl overflow-hidden animate-scale-in">
+                <div className="h-2 gradient-primary animate-glow" />
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-2xl">
                     <div className="w-10 h-10 gradient-secondary rounded-lg flex items-center justify-center">
@@ -304,9 +312,9 @@ export default function Index() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="progress" className="space-y-6 animate-fade-in">
+            <TabsContent value="progress" className="space-y-6">
               <div className="grid gap-4 md:grid-cols-3">
-                <Card className="card-elevated border-0 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl overflow-hidden">
+                <Card className="card-elevated border-0 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl overflow-hidden animate-scale-in">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-semibold">Страйк</CardTitle>
                     <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
@@ -319,7 +327,7 @@ export default function Index() {
                   </CardContent>
                 </Card>
 
-                <Card className="card-elevated border-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl overflow-hidden">
+                <Card className="card-elevated border-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl overflow-hidden animate-scale-in" style={{ animationDelay: '0.1s' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-semibold">Всего записей</CardTitle>
                     <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -332,7 +340,7 @@ export default function Index() {
                   </CardContent>
                 </Card>
 
-                <Card className="card-elevated border-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl overflow-hidden">
+                <Card className="card-elevated border-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl overflow-hidden animate-scale-in" style={{ animationDelay: '0.2s' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-semibold">Среднее настроение</CardTitle>
                     <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -402,8 +410,8 @@ export default function Index() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="education" className="space-y-6 animate-fade-in">
-              <Card className="card-elevated border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
+            <TabsContent value="education" className="space-y-6">
+              <Card className="card-elevated border-0 glass-effect rounded-2xl animate-scale-in">
                 <CardHeader>
                   <CardTitle className="text-2xl">Стадии переживания утраты</CardTitle>
                   <CardDescription className="text-base">
@@ -465,10 +473,10 @@ export default function Index() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-4">
-                    <div className="border rounded-lg p-4 space-y-2">
+                    <div className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-white">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">«Это важно»</h3>
-                        <Badge>Партнер</Badge>
+                        <h3 className="font-bold text-base">«Это важно»</h3>
+                        <Badge className="gradient-accent text-white border-0">Партнер</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Сервис Елены Мицкевич с проверенными психологами и строгим отбором специалистов
@@ -479,10 +487,10 @@ export default function Index() {
                       </Button>
                     </div>
 
-                    <div className="border rounded-lg p-4 space-y-2">
+                    <div className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-white">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">Центр «Focus»</h3>
-                        <Badge>Партнер</Badge>
+                        <h3 className="font-bold text-base">Центр «Focus»</h3>
+                        <Badge className="gradient-accent text-white border-0">Партнер</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Психологи топ-10 Москвы, специализирующиеся на работе с утратой
@@ -493,10 +501,10 @@ export default function Index() {
                       </Button>
                     </div>
 
-                    <div className="border rounded-lg p-4 space-y-2">
+                    <div className="border-2 border-gray-200 rounded-xl p-5 space-y-2 hover:shadow-lg hover:border-purple-300 transition-all bg-white">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">«Synaps»</h3>
-                        <Badge>Партнер</Badge>
+                        <h3 className="font-bold text-base">«Synaps»</h3>
+                        <Badge className="gradient-accent text-white border-0">Партнер</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Главный психолог — Мария Максимова, к.м.н., член РОП
@@ -564,14 +572,14 @@ export default function Index() {
         </div>
       </main>
 
-      <footer className="border-t mt-16">
+      <footer className="border-t border-white/20 mt-16 glass-effect relative">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© 2024 Точка опоры. Все права защищены.</p>
+            <p className="font-medium">© 2024 Точка опоры. Все права защищены.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-foreground transition-colors">Пользовательское соглашение</a>
-              <a href="#" className="hover:text-foreground transition-colors">Конфиденциальность</a>
-              <a href="#" className="hover:text-foreground transition-colors">Контакты</a>
+              <a href="#" className="hover:text-purple-600 transition-all font-medium hover:underline">Пользовательское соглашение</a>
+              <a href="#" className="hover:text-purple-600 transition-all font-medium hover:underline">Конфиденциальность</a>
+              <a href="#" className="hover:text-purple-600 transition-all font-medium hover:underline">Контакты</a>
             </div>
           </div>
         </div>

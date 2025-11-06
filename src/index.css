@@ -105,6 +105,14 @@
     animation: slide-up 0.6s ease-out;
   }
 
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+
   .gradient-primary {
     background: linear-gradient(
       135deg,
@@ -129,16 +137,52 @@
     );
   }
 
+  .gradient-accent {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(at 40% 20%, hsla(262, 83%, 78%, 0.3) 0, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(217, 91%, 80%, 0.3) 0, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(280, 85%, 85%, 0.2) 0, transparent 50%),
+      radial-gradient(at 80% 50%, hsla(262, 83%, 88%, 0.2) 0, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(217, 91%, 88%, 0.3) 0, transparent 50%),
+      radial-gradient(at 80% 100%, hsla(280, 85%, 78%, 0.3) 0, transparent 50%);
+  }
+
   .card-elevated {
     box-shadow:
       0 4px 6px -1px rgb(0 0 0 / 0.05),
       0 10px 15px -3px rgb(0 0 0 / 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .card-elevated:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 20px -5px rgb(0 0 0 / 0.1),
+      0 20px 25px -5px rgb(0 0 0 / 0.1);
   }
 
   .card-floating {
     box-shadow:
       0 20px 25px -5px rgb(0 0 0 / 0.08),
       0 10px 10px -5px rgb(0 0 0 / 0.04);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-floating:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+      0 25px 35px -5px rgb(0 0 0 / 0.12),
+      0 15px 15px -5px rgb(0 0 0 / 0.06);
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -161,5 +205,28 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
   }
 }
